@@ -226,6 +226,10 @@ export class Animation extends common.Animation implements definition.Animation 
         let tempRotate = animation.target.rotate * Math.PI / 180;
         let abs;
 
+        if (valueSource === undefined) {
+            valueSource = dependencyObservable.ValueSource.Local;
+        }
+
         switch (animation.property) {
             case common.Properties.backgroundColor:
                 animation._originalValue = animation.target.backgroundColor;
@@ -243,6 +247,7 @@ export class Animation extends common.Animation implements definition.Animation 
                     nativeView.setValueForKey(UIColor.clearColor(), "backgroundColor");
                 }
                 value = value.CGColor;
+                animation.target.style._setValue(style.backgroundColorProperty, animation.target.backgroundColor, valueSource);
                 break;
             case common.Properties.opacity:
                 animation._originalValue = animation.target.opacity;
@@ -255,6 +260,7 @@ export class Animation extends common.Animation implements definition.Animation 
                 else {
                   originalValue = nativeView.layer.opacity;
                 }
+                animation.target.style._setValue(style.opacityProperty, animation.target.opacity, valueSource);
                 break;
             case common.Properties.rotate:
                 animation._originalValue = animation.target.rotate;
@@ -276,6 +282,7 @@ export class Animation extends common.Animation implements definition.Animation 
                 if (abs < 0.001 && originalValue !== tempRotate) {
                     originalValue = tempRotate;
                 }
+                animation.target.style._setValue(style.rotateProperty, animation.target.rotate, valueSource);
                 break;
             case common.Properties.translate:
                 animation._originalValue = { x: animation.target.translateX, y: animation.target.translateY };
@@ -291,6 +298,8 @@ export class Animation extends common.Animation implements definition.Animation 
                   originalValue = NSValue.valueWithCATransform3D(nativeView.layer.transform);
                 }
                 value = NSValue.valueWithCATransform3D(CATransform3DTranslate(nativeView.layer.transform, value.x, value.y, 0));
+                animation.target.style._setValue(style.translateXProperty, animation.target.translateX, valueSource);
+                animation.target.style._setValue(style.translateXProperty, animation.target.translateY, valueSource);
                 break;
             case common.Properties.scale:
                 animation._originalValue = { x: animation.target.scaleX, y: animation.target.scaleY };
@@ -306,6 +315,8 @@ export class Animation extends common.Animation implements definition.Animation 
                   originalValue = NSValue.valueWithCATransform3D(nativeView.layer.transform);
                 }
                 value = NSValue.valueWithCATransform3D(CATransform3DScale(nativeView.layer.transform, value.x, value.y, 1));
+                animation.target.style._setValue(style.scaleXProperty, animation.target.scaleX, valueSource);
+                animation.target.style._setValue(style.scaleYProperty, animation.target.scaleY, valueSource);
                 break;
             case _transform:
                 if (presentationLayer != null && valueSource !== dependencyObservable.ValueSource.Css) {
@@ -324,6 +335,10 @@ export class Animation extends common.Animation implements definition.Animation 
                 };
                 propertyNameToAnimate = "transform";
                 value = NSValue.valueWithCATransform3D(Animation._createNativeAffineTransform(animation));
+                animation.target.style._setValue(style.scaleXProperty, animation.target.scaleX, valueSource);
+                animation.target.style._setValue(style.scaleYProperty, animation.target.scaleY, valueSource);
+                animation.target.style._setValue(style.translateXProperty, animation.target.translateX, valueSource);
+                animation.target.style._setValue(style.translateYProperty, animation.target.translateY, valueSource);
                 break;
             default:
                 throw new Error("Cannot animate " + animation.property);
